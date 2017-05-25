@@ -16,6 +16,7 @@ import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.Polyline;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.constants.MyLocationTracking;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -57,6 +58,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
   private Polyline routeLine;
   private MapboxMap mapboxMap;
   private Marker destinationMarker;
+  private Marker snappedUserLocation;
 
   // Navigation related variables
   private LocationEngine locationEngine;
@@ -101,6 +103,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
 
           ((MockLocationEngine) locationEngine).setRoute(route);
           navigation.setLocationEngine(locationEngine);
+          navigation.setSnapToRoute(true);
           navigation.startNavigation(route);
         }
       }
@@ -123,6 +126,11 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
       mapboxMap.setMyLocationEnabled(true);
       mapboxMap.getTrackingSettings().setMyLocationTrackingMode(MyLocationTracking.TRACKING_FOLLOW);
       mapboxMap.getTrackingSettings().setDismissAllTrackingOnGesture(false);
+    }
+
+    Location userLocation = mapboxMap.getMyLocation();
+    if (userLocation != null) {
+      renderUserLocation(userLocation);
     }
   }
 
@@ -164,6 +172,8 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
       return;
     }
 
+    renderUserLocation(userLocation);
+
     Position origin = (Position.fromCoordinates(userLocation.getLongitude(), userLocation.getLatitude()));
     if (TurfMeasurement.distance(origin, destination, TurfConstants.UNIT_METERS) < 50) {
       mapboxMap.removeMarker(destinationMarker);
@@ -186,6 +196,16 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     });
   }
 
+  private void renderUserLocation(Location location) {
+    if (snappedUserLocation != null) {
+      mapboxMap.removeMarker(snappedUserLocation);
+    }
+
+    snappedUserLocation = mapboxMap.addMarker(new MarkerOptions()
+            .position(new LatLng(location.getLatitude(), location.getLongitude()))
+    );
+  }
+
   /*
    * Navigation listeners
    */
@@ -202,6 +222,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
   @Override
   public void onProgressChange(Location location, RouteProgress routeProgress) {
     Timber.d("onProgressChange: fraction of route traveled: %f", routeProgress.getFractionTraveled());
+    renderUserLocation(location);
   }
 
   @Override
