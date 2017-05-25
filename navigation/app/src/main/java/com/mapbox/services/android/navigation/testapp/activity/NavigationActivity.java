@@ -89,6 +89,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
           navigation.addNavigationEventListener(NavigationActivity.this);
           navigation.addProgressChangeListener(NavigationActivity.this);
           navigation.addAlertLevelChangeListener(NavigationActivity.this);
+          navigation.addOffRouteListener(NavigationActivity.this);
 
           // Adjust location engine to force a gps reading every second. This isn't required but gives an overall
           // better navigation experience for users. The updating only occurs if the user moves 3 meters or further
