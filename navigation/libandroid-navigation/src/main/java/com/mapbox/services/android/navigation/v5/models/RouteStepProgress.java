@@ -3,7 +3,6 @@ package com.mapbox.services.android.navigation.v5.models;
 
 import android.support.annotation.NonNull;
 
-import com.google.auto.value.AutoValue;
 import com.mapbox.services.Constants;
 import com.mapbox.services.Experimental;
 import com.mapbox.services.api.directions.v5.models.LegStep;
@@ -19,12 +18,10 @@ import com.mapbox.services.commons.utils.PolylineUtils;
 import java.util.List;
 
 @Experimental
-@AutoValue
-public abstract class RouteStepProgress {
+public class RouteStepProgress {
 
-  public abstract LegStep step();
-
-  public abstract Position userSnappedPosition();
+  private LegStep step;
+  private Position userSnappedPosition;
 
   /**
    * Constructor for the step progress.
@@ -33,10 +30,9 @@ public abstract class RouteStepProgress {
    * @param userSnappedPosition the users snapped location when routeProgress was last updated.
    * @since 0.1.0
    */
-  static RouteStepProgress create(
-    @NonNull RouteLeg routeLeg, int stepIndex, @NonNull Position userSnappedPosition) {
-    LegStep step = routeLeg.getSteps().get(stepIndex);
-    return new AutoValue_RouteStepProgress(step, userSnappedPosition);
+  RouteStepProgress(@NonNull RouteLeg routeLeg, int stepIndex, @NonNull Position userSnappedPosition) {
+    this.userSnappedPosition = userSnappedPosition;
+    this.step = routeLeg.getSteps().get(stepIndex);
   }
 
   /**
@@ -47,7 +43,7 @@ public abstract class RouteStepProgress {
    * @since 0.1.0
    */
   public double getDistanceTraveled() {
-    double distanceTraveled = step().getDistance() - getDistanceRemaining();
+    double distanceTraveled = step.getDistance() - getDistanceRemaining();
     if (distanceTraveled < 0) {
       distanceTraveled = 0;
     }
@@ -65,11 +61,11 @@ public abstract class RouteStepProgress {
     double distanceRemaining = 0;
 
     // Decode the geometry
-    List<Position> coords = PolylineUtils.decode(step().getGeometry(), Constants.PRECISION_6);
+    List<Position> coords = PolylineUtils.decode(step.getGeometry(), Constants.PRECISION_6);
 
     if (coords.size() > 1) {
       LineString slicedLine = TurfMisc.lineSlice(
-        Point.fromCoordinates(userSnappedPosition()),
+        Point.fromCoordinates(userSnappedPosition),
         Point.fromCoordinates(coords.get(coords.size() - 1)),
         LineString.fromCoordinates(coords)
       );
@@ -88,8 +84,8 @@ public abstract class RouteStepProgress {
   public float getFractionTraveled() {
     float fractionTraveled = 1;
 
-    if (step().getDistance() > 0) {
-      fractionTraveled = (float) (getDistanceTraveled() / step().getDistance());
+    if (step.getDistance() > 0) {
+      fractionTraveled = (float) (getDistanceTraveled() / step.getDistance());
       if (fractionTraveled < 0) {
         fractionTraveled = 0;
       }
@@ -104,7 +100,7 @@ public abstract class RouteStepProgress {
    * @since 0.1.0
    */
   public double getDurationRemaining() {
-    return (1 - getFractionTraveled()) * step().getDuration();
+    return (1 - getFractionTraveled()) * step.getDuration();
   }
 
 

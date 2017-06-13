@@ -62,7 +62,7 @@ class NavigationEngine {
     // if the previousRouteProgress is null, the route has just begun and one needs to be created
     if (previousRouteProgress == null) {
       Position currentPosition = Position.fromCoordinates(location.getLongitude(), location.getLatitude());
-      previousRouteProgress = RouteProgress.create(directionsRoute, currentPosition,
+      previousRouteProgress = new RouteProgress(directionsRoute, currentPosition,
         0, 0, NavigationConstants.NONE_ALERT_LEVEL);
     }
 
@@ -87,8 +87,8 @@ class NavigationEngine {
     SnapLocation snapLocation = new SnapLocation(location,
       previousRouteProgress.getCurrentLegProgress().getCurrentStep(), options);
 
-    // Create a RouteProgress.create object using the latest user location
-    RouteProgress routeProgress = RouteProgress.create(directionsRoute, snapLocation.getUsersCurrentSnappedPosition(),
+    // Create a new RouteProgress object using the latest user location
+    RouteProgress routeProgress = new RouteProgress(directionsRoute, snapLocation.getUsersCurrentSnappedPosition(),
       legIndex, stepIndex, alertLevel);
 
     // Determine if the user is off route or not

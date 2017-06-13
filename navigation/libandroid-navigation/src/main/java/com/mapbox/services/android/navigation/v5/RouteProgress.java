@@ -1,6 +1,5 @@
 package com.mapbox.services.android.navigation.v5;
 
-import com.google.auto.value.AutoValue;
 import com.mapbox.services.Constants;
 import com.mapbox.services.Experimental;
 import com.mapbox.services.android.navigation.v5.models.RouteLegProgress;
@@ -29,18 +28,13 @@ import java.util.List;
  * @since 0.1.0
  */
 @Experimental
-@AutoValue
-public abstract class RouteProgress {
+public class RouteProgress {
 
-  public abstract RouteLegProgress currentLegProgress();
-
-  public abstract DirectionsRoute route();
-
-  public abstract Position userSnappedPosition();
-
-  public abstract int legIndex();
-
-  public abstract int alertUserLevel();
+  private RouteLegProgress currentLegProgress;
+  private DirectionsRoute route;
+  private Position userSnappedPosition;
+  private int legIndex;
+  private int alertUserLevel;
 
   /**
    * Constructor for the route routeProgress information.
@@ -52,12 +46,12 @@ public abstract class RouteProgress {
    * @param alertUserLevel      the most recently calculated alert level.
    * @since 0.1.0
    */
-  public static RouteProgress create(
-    DirectionsRoute route, Position userSnappedPosition, int legIndex, int stepIndex, int alertUserLevel) {
-    RouteLegProgress routeLegProgress
-      = RouteLegProgress.create(route.getLegs().get(legIndex), stepIndex, userSnappedPosition);
-    return new AutoValue_RouteProgress(
-      routeLegProgress, route, userSnappedPosition, legIndex, alertUserLevel);
+  RouteProgress(DirectionsRoute route, Position userSnappedPosition, int legIndex, int stepIndex, int alertUserLevel) {
+    this.route = route;
+    this.alertUserLevel = alertUserLevel;
+    this.userSnappedPosition = userSnappedPosition;
+    this.legIndex = legIndex;
+    currentLegProgress = new RouteLegProgress(getCurrentLeg(), stepIndex, userSnappedPosition);
   }
 
   /**
@@ -67,7 +61,7 @@ public abstract class RouteProgress {
    * @since 0.1.0
    */
   public RouteLegProgress getCurrentLegProgress() {
-    return currentLegProgress();
+    return currentLegProgress;
   }
 
   /**
@@ -77,7 +71,7 @@ public abstract class RouteProgress {
    * @since 0.1.0
    */
   public int getLegIndex() {
-    return legIndex();
+    return legIndex;
   }
 
   /**
@@ -86,7 +80,7 @@ public abstract class RouteProgress {
    * @return a {@link RouteLeg} the user is currently on.
    */
   public RouteLeg getCurrentLeg() {
-    return route().getLegs().get(getLegIndex());
+    return route.getLegs().get(getLegIndex());
   }
 
   /**
@@ -96,7 +90,7 @@ public abstract class RouteProgress {
    * @since 0.1.0
    */
   public double getDistanceTraveled() {
-    double distanceTraveled = route().getDistance() - getDistanceRemaining();
+    double distanceTraveled = route.getDistance() - getDistanceRemaining();
     if (distanceTraveled < 0) {
       distanceTraveled = 0;
     }
@@ -110,7 +104,7 @@ public abstract class RouteProgress {
    * @since 0.1.0
    */
   public double getDurationRemaining() {
-    return (1 - getFractionTraveled()) * route().getDuration();
+    return (1 - getFractionTraveled()) * route.getDuration();
   }
 
   /**
@@ -123,8 +117,8 @@ public abstract class RouteProgress {
   public float getFractionTraveled() {
     float fractionRemaining = 1;
 
-    if (route().getDistance() > 0) {
-      fractionRemaining = (float) (getDistanceTraveled() / route().getDistance());
+    if (route.getDistance() > 0) {
+      fractionRemaining = (float) (getDistanceTraveled() / route.getDistance());
     }
     return fractionRemaining;
   }
@@ -138,17 +132,17 @@ public abstract class RouteProgress {
   public double getDistanceRemaining() {
     double distanceRemaining = 0;
 
-    List<Position> coords = PolylineUtils.decode(currentLegProgress().getCurrentStep().getGeometry(),
+    List<Position> coords = PolylineUtils.decode(currentLegProgress.getCurrentStep().getGeometry(),
       Constants.PRECISION_6);
     if (coords.size() > 1) {
       LineString slicedLine = TurfMisc.lineSlice(
-        Point.fromCoordinates(userSnappedPosition()),
+        Point.fromCoordinates(userSnappedPosition),
         Point.fromCoordinates(coords.get(coords.size() - 1)),
         LineString.fromCoordinates(coords)
       );
       distanceRemaining += TurfMeasurement.lineDistance(slicedLine, TurfConstants.UNIT_METERS);
     }
-    for (int i = currentLegProgress().getStepIndex() + 1; i < getCurrentLeg().getSteps().size(); i++) {
+    for (int i = currentLegProgress.getStepIndex() + 1; i < getCurrentLeg().getSteps().size(); i++) {
       distanceRemaining += getCurrentLeg().getSteps().get(i).getDistance();
     }
     return distanceRemaining;
@@ -161,7 +155,7 @@ public abstract class RouteProgress {
    * @since 0.1.0
    */
   public int getAlertUserLevel() {
-    return alertUserLevel();
+    return alertUserLevel;
   }
 
   /**
@@ -171,6 +165,6 @@ public abstract class RouteProgress {
    * @since 0.1.0
    */
   public DirectionsRoute getRoute() {
-    return route();
+    return route;
   }
 }
