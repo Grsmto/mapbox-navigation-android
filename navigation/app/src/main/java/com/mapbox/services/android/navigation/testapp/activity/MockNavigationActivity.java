@@ -129,7 +129,7 @@ public class MockNavigationActivity extends AppCompatActivity implements OnMapRe
   @Override
   public void onMapClick(@NonNull LatLng point) {
     if (pathMarkers.size() >= 2) {
-      Toast.makeText(NavigationActivity.this, "Only 2 waypoints supported", Toast.LENGTH_LONG).show();
+      Toast.makeText(MockNavigationActivity.this, "Only 2 waypoints supported", Toast.LENGTH_LONG).show();
       return;
     }
 
