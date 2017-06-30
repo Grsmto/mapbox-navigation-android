@@ -17,7 +17,9 @@ public class NavigationConstants {
   @Experimental
   public static final int URGENT_MILESTONE = 4;
   @Experimental
-  public static final int ARRIVAL_MILESTONE = 5;
+  public static final int WAYPOINT_MILESTONE = 5;
+  @Experimental
+  public static final int ARRIVAL_MILESTONE = 6;
 
   /**
    * Threshold user must be in within to count as completing a step. One of two heuristics used to know when a user

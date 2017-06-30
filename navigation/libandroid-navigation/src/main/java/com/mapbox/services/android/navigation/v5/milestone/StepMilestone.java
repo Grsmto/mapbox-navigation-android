@@ -49,6 +49,13 @@ public class StepMilestone extends Milestone {
       new Number[] {
         routeProgress.getCurrentLegProgress().getUpComingStep() != null
           ? routeProgress.getCurrentLegProgress().getUpComingStep().getDistance() : 0});
+    statementObjects.put(TriggerProperty.FIRST_LEG,
+      new Number[] {routeProgress.getLegIndex(), 0});
+    statementObjects.put(TriggerProperty.LAST_LEG,
+      new Number[] {routeProgress.getLegIndex(),
+        (routeProgress.getRoute().getLegs().size() - 1)});
+
+    int legIndex = routeProgress.getLegIndex();
 
     // Determine if the step index has changed and set called accordingly. This prevents multiple calls to
     // onMilestoneEvent per Step.
