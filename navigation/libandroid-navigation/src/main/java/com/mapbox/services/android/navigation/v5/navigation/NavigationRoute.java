@@ -64,18 +64,21 @@ public abstract class NavigationRoute {
   }
 
   MapboxDirections getDirectionsRequest() {
+
+
     MapboxDirections.Builder builder = new MapboxDirections.Builder()
       .setUser(user())
       .setProfile(profile())
       .setCoordinates(coordinates())
-      .setAccessToken(accessToken())
+      .setAccessToken(accessToken()) // TODO use access token in mapboxNavigation
       .setAlternatives(alternatives())
       .setRadiuses(radiuses())
       .setAnnotation(congestion() ? DirectionsCriteria.ANNOTATION_CONGESTION : null)
       .setLanguage(language())
       .setGeometry(DirectionsCriteria.GEOMETRY_POLYLINE6)
       .setOverview(DirectionsCriteria.OVERVIEW_FULL)
-      .setSteps(true);
+      .setSteps(true)
+      .setRoundaboutExits(true);
 
     if (!bearings().isEmpty()) {
       builder.setBearings(formatBearingValues());

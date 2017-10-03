@@ -11,9 +11,11 @@ import com.mapbox.services.android.navigation.v5.milestone.Milestone;
 import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
 import com.mapbox.services.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.services.commons.models.Position;
+import com.mapbox.services.commons.utils.PolylineUtils;
 
 import java.util.List;
 
+import static com.mapbox.services.Constants.PRECISION_6;
 import static com.mapbox.services.android.navigation.v5.navigation.NavigationHelper.bearingMatchesManeuverFinalHeading;
 import static com.mapbox.services.android.navigation.v5.navigation.NavigationHelper.checkMilestones;
 import static com.mapbox.services.android.navigation.v5.navigation.NavigationHelper.getSnappedLocation;
@@ -33,6 +35,7 @@ class NavigationEngine extends HandlerThread implements Handler.Callback {
   private static final String THREAD_NAME = "NavThread";
 
   private RouteProgress previousRouteProgress;
+  private List<Position> stepPositions;
   private NavigationIndices indices;
   private Handler responseHandler;
   private Handler workerHandler;
@@ -67,7 +70,8 @@ class NavigationEngine extends HandlerThread implements Handler.Callback {
       previousRouteProgress, routeProgress, newLocationModel.mapboxNavigation());
     final boolean userOffRoute = isUserOffRoute(newLocationModel, routeProgress);
     final Location location = !userOffRoute && newLocationModel.mapboxNavigation().options().snapToRoute()
-      ? getSnappedLocation(newLocationModel.mapboxNavigation(), newLocationModel.location(), routeProgress)
+      ? getSnappedLocation(newLocationModel.mapboxNavigation(), newLocationModel.location(),
+      routeProgress, stepPositions)
       : newLocationModel.location();
 
     previousRouteProgress = routeProgress;
@@ -86,7 +90,18 @@ class NavigationEngine extends HandlerThread implements Handler.Callback {
     DirectionsRoute directionsRoute = mapboxNavigation.getRoute();
     MapboxNavigationOptions options = mapboxNavigation.options();
 
-    if (previousRouteProgress == null) {
+    if (newRoute(directionsRoute)) {
+      // Need to keep track of total distance traveled even when reroute occurs.
+      if (previousRouteProgress != null) {
+        mapboxNavigation.getSessionState().toBuilder().previousRouteDistancesCompleted(
+          mapboxNavigation.getSessionState().previousRouteDistancesCompleted()
+            + previousRouteProgress.distanceTraveled()
+        );
+      }
+      // Decode the first steps geometry and hold onto the resulting Position objects till the users
+      // on the next step. Indices are both 0 since the user just started on the new route.
+      stepPositions = PolylineUtils.decode(
+        directionsRoute.getLegs().get(0).getSteps().get(0).getGeometry(), PRECISION_6);
 
       previousRouteProgress = RouteProgress.builder()
         .stepDistanceRemaining(directionsRoute.getLegs().get(0).getSteps().get(0).getDistance())
@@ -100,14 +115,9 @@ class NavigationEngine extends HandlerThread implements Handler.Callback {
       indices = NavigationIndices.create(0, 0);
     }
 
-    if (!TextUtils.equals(directionsRoute.getGeometry(), previousRouteProgress.directionsRoute().getGeometry())) {
-      indices = NavigationIndices.create(0, 0);
-    }
-
-    Position snappedPosition = userSnappedToRoutePosition(
-      location, indices.legIndex(), indices.stepIndex(), directionsRoute);
+    Position snappedPosition = userSnappedToRoutePosition(location, stepPositions);
     double stepDistanceRemaining = stepDistanceRemaining(
-      snappedPosition, indices.legIndex(), indices.stepIndex(), directionsRoute);
+      snappedPosition, indices.legIndex(), indices.stepIndex(), directionsRoute, stepPositions);
     double legDistanceRemaining = legDistanceRemaining(
       stepDistanceRemaining, indices.legIndex(), indices.stepIndex(), directionsRoute);
     double routeDistanceRemaining = routeDistanceRemaining(
@@ -115,11 +125,22 @@ class NavigationEngine extends HandlerThread implements Handler.Callback {
 
     if (bearingMatchesManeuverFinalHeading(location, previousRouteProgress, options.maxTurnCompletionOffset())
       && stepDistanceRemaining < options.maneuverZoneRadius()) {
+      // First increase the indices and then update the majority of information for the new
+      // routeProgress.
       indices = increaseIndex(previousRouteProgress, indices);
+      stepPositions = PolylineUtils.decode(
+        directionsRoute.getLegs().get(
+          indices.legIndex()).getSteps().get(indices.stepIndex()).getGeometry(), PRECISION_6);
+      snappedPosition = userSnappedToRoutePosition(location, stepPositions);
+      stepDistanceRemaining = stepDistanceRemaining(
+        snappedPosition, indices.legIndex(), indices.stepIndex(), directionsRoute, stepPositions);
+      legDistanceRemaining = legDistanceRemaining(
+        stepDistanceRemaining, indices.legIndex(), indices.stepIndex(), directionsRoute);
+      routeDistanceRemaining = routeDistanceRemaining(
+        legDistanceRemaining, indices.legIndex(), directionsRoute);
     }
 
     // Create a RouteProgress.create object using the latest user location
-
     return RouteProgress.builder()
       .stepDistanceRemaining(stepDistanceRemaining)
       .legDistanceRemaining(legDistanceRemaining)
@@ -128,6 +149,20 @@ class NavigationEngine extends HandlerThread implements Handler.Callback {
       .stepIndex(indices.stepIndex())
       .legIndex(indices.legIndex())
       .build();
+  }
+
+  /**
+   * Check used to determine if navigation is starting for the first time (previousRouteProgress is null).
+   * Or, a new route has been found (in off-route scenarios).
+   *
+   * @param directionsRoute to check against the current route
+   * @return true if starting navigation for the first time
+   * or a new route is found, false otherwise
+   */
+  private boolean newRoute(DirectionsRoute directionsRoute) {
+    return previousRouteProgress == null
+      || !TextUtils.equals(directionsRoute.getGeometry(),
+      previousRouteProgress.directionsRoute().getGeometry());
   }
 
   /**

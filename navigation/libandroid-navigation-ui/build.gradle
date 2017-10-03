@@ -7,9 +7,15 @@ android {
   defaultConfig {
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
-    versionCode 1
-    versionName "0.3.1"
+    versionCode rootProject.ext.versionCode
+    versionName rootProject.ext.versionName
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    vectorDrawables.useSupportLibrary = true
+
+    buildConfigField('String', "MAPBOX_NAVIGATION_SDK_IDENTIFIER", String.format("\"%s\"",
+        "mapbox-navigation-ui-android"))
+    buildConfigField "String", "MAPBOX_NAVIGATION_EVENTS_USER_AGENT",
+        String.format("\"mapbox-navigation-ui-android/%s\"", project.VERSION_NAME)
   }
   configurations {
     javadocDeps
@@ -30,10 +36,20 @@ dependencies {
 
   // Support libraries
   compile rootProject.ext.dep.supportAppcompatV7
+  compile rootProject.ext.dep.supportDesign
+  compile rootProject.ext.dep.supportRecyclerView
+  compile rootProject.ext.dep.supportConstraintLayout
+
+  // Mapbox plugins
+  compile rootProject.ext.dep.locationLayerPlugin
 
   // Logging
   compile rootProject.ext.dep.timber
 
+  // AWS Polly
+  compile rootProject.ext.dep.polly
+
+  // Mapbox Map SDK Javadoc
   javadocDeps rootProject.ext.dep.mapboxMapSdk
 
   // Unit testing
