@@ -28,12 +28,13 @@ public class OffRouteDetector extends OffRoute {
    */
   @Override
   public boolean isUserOffRoute(Location location, RouteProgress routeProgress, MapboxNavigationOptions options) {
-    Position futurePosition = getFuturePosition(location, options);
+//    Position futurePosition = getFuturePosition(location, options);
     double radius = Math.max(options.maximumDistanceOffRoute(),
       location.getAccuracy() + options.userLocationSnapDistance());
+    Position locationToPosition = Position.fromCoordinates(location.getLongitude(), location.getLatitude());
 
     LegStep currentStep = routeProgress.currentLegProgress().currentStep();
-    boolean isOffRoute = userTrueDistanceFromStep(futurePosition, currentStep) > radius;
+    boolean isOffRoute = userTrueDistanceFromStep(locationToPosition, currentStep) > radius;
 
     RouteLegProgress currentLegProgress = routeProgress.currentLegProgress();
     List<RouteLeg> routeLegs = routeProgress.directionsRoute().getLegs();
@@ -47,26 +48,26 @@ public class OffRouteDetector extends OffRoute {
 
     if (upComingStep != null && isOffRoute) {
 
-      if (upComingStep.getManeuver().getType().equals("arrive")) {
-        int legIndex = routeProgress.legIndex();
-        int upComingStepIndex = currentLegProgress.stepIndex() + 1;
+//      if (upComingStep.getManeuver().getType().equals("arrive")) {
+//        int legIndex = routeProgress.legIndex();
+//        int upComingStepIndex = currentLegProgress.stepIndex() + 1;
+//
+//        // If we're already on the last step
+//        if (upComingStepIndex >= routeLegs.get(legIndex).getSteps().size() - 1) {
+//          upComingStepIndex = 0;
+//
+//          // If we're already on the last leg
+//          if (legIndex >= routeLegs.size() - 1) {
+//            // then if means we're arrived, no follow up step
+//            upComingStep = null;
+//          } else {
+//            legIndex++;
+//            upComingStep = routeLegs.get(legIndex).getSteps().get(upComingStepIndex);
+//          }
+//        }
+//      }
 
-        // If we're already on the last step
-        if (upComingStepIndex >= routeLegs.get(legIndex).getSteps().size() - 1) {
-          upComingStepIndex = 0;
-
-          // If we're already on the last leg
-          if (legIndex >= routeLegs.size() - 1) {
-            // then if means we're arrived, no follow up step
-            upComingStep = null;
-          } else {
-            legIndex++;
-            upComingStep = routeLegs.get(legIndex).getSteps().get(upComingStepIndex);
-          }
-        }
-      }
-
-      double distance = userTrueDistanceFromStep(futurePosition, upComingStep);
+      double distance = userTrueDistanceFromStep(locationToPosition, upComingStep);
       isCloseToUpcomingStep = distance < radius;
       if (isOffRoute && isCloseToUpcomingStep) {
         // TODO increment step index
