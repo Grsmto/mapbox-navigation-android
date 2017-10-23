@@ -86,31 +86,31 @@ final class NavigationMetricsWrapper {
 
     updateRouteProgressSessionData(routeProgress, sessionState);
 
-    Hashtable<String, Object> rerouteEvent = MapboxNavigationEvent.buildRerouteEvent(
-      sdkIdentifier, BuildConfig.MAPBOX_NAVIGATION_VERSION_NAME, sessionState.sessionIdentifier(),
-      location.getLatitude(), location.getLongitude(),
-      sessionState.currentGeometry(), routeProgress.directionsRoute().routeOptions().profile(),
-      routeProgress.directionsRoute().distance().intValue(),
-      routeProgress.directionsRoute().duration().intValue(),
-      sessionState.rerouteCount(), sessionState.startTimestamp(), beforeLocations, afterLocations,
-      (int) sessionState.routeProgressBeforeReroute().distanceTraveled(),
-      (int) sessionState.routeProgressBeforeReroute().distanceRemaining(),
-      (int) sessionState.routeProgressBeforeReroute().durationRemaining(),
-      (int) routeProgress.distanceRemaining(),
-      (int) routeProgress.durationRemaining(),
-      sessionState.secondsSinceLastReroute(), TelemetryUtils.buildUUID(),
-      routeProgress.directionsRoute().geometry(), sessionState.mockLocation(),
-      sessionState.originalRequestIdentifier(), sessionState.requestIdentifier(), sessionState.originalGeometry(),
-      sessionState.originalDistance(), sessionState.originalDuration(), null,
-      upcomingInstruction, upcomingType, upcomingModifier, upcomingName, previousInstruction,
-      previousType, previousModifier,
-      previousName, routeProgress.currentLegProgress().currentStep().distance().intValue(),
-      routeProgress.currentLegProgress().currentStep().duration().intValue(),
-      (int) routeProgress.currentLegProgress().currentStepProgress().distanceRemaining(),
-      (int) routeProgress.currentLegProgress().currentStepProgress().durationRemaining(),
-      sessionState.currentStepCount(), sessionState.originalStepCount());
-    rerouteEvent.put(MapboxNavigationEvent.KEY_CREATED, TelemetryUtils.generateCreateDate(location));
-    MapboxTelemetry.getInstance().pushEvent(rerouteEvent);
+//    Hashtable<String, Object> rerouteEvent = MapboxNavigationEvent.buildRerouteEvent(
+//      sdkIdentifier, BuildConfig.MAPBOX_NAVIGATION_VERSION_NAME, sessionState.sessionIdentifier(),
+//      location.getLatitude(), location.getLongitude(),
+//      sessionState.currentGeometry(), routeProgress.directionsRoute().routeOptions().profile(),
+//      routeProgress.directionsRoute().distance().intValue(),
+//      routeProgress.directionsRoute().duration().intValue(),
+//      sessionState.rerouteCount(), sessionState.startTimestamp(), beforeLocations, afterLocations,
+//      (int) sessionState.routeProgressBeforeReroute().distanceTraveled(),
+//      (int) sessionState.routeProgressBeforeReroute().distanceRemaining(),
+//      (int) sessionState.routeProgressBeforeReroute().durationRemaining(),
+//      (int) routeProgress.distanceRemaining(),
+//      (int) routeProgress.durationRemaining(),
+//      sessionState.secondsSinceLastReroute(), TelemetryUtils.buildUUID(),
+//      routeProgress.directionsRoute().geometry(), sessionState.mockLocation(),
+//      sessionState.originalRequestIdentifier(), sessionState.requestIdentifier(), sessionState.originalGeometry(),
+//      sessionState.originalDistance(), sessionState.originalDuration(), null,
+//      upcomingInstruction, upcomingType, upcomingModifier, upcomingName, previousInstruction,
+//      previousType, previousModifier,
+//      previousName, routeProgress.currentLegProgress().currentStep().distance().intValue(),
+//      routeProgress.currentLegProgress().currentStep().duration().intValue(),
+//      (int) routeProgress.currentLegProgress().currentStepProgress().distanceRemaining(),
+//      (int) routeProgress.currentLegProgress().currentStepProgress().durationRemaining(),
+//      sessionState.currentStepCount(), sessionState.originalStepCount());
+//    rerouteEvent.put(MapboxNavigationEvent.KEY_CREATED, TelemetryUtils.generateCreateDate(location));
+//    MapboxTelemetry.getInstance().pushEvent(rerouteEvent);
   }
 
   static void feedbackEvent(SessionState sessionState, RouteProgress routeProgress, Location location,
