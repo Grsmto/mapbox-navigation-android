@@ -43,8 +43,6 @@ import os
 import requests
 import subprocess
 
-GRADLE_TOKEN = 'VERSION_NAME='
-
 # Three stages, from less stable to more stable
 ALLOWED_STAGES = ['snapshot', 'beta', 'final']
 
@@ -58,12 +56,10 @@ CIRCLECI_API_TOKEN_ENV_VAR = 'CIRCLECI_API_TOKEN'
 ALLOWED_PRE_RELEASE = ['beta']
 
 # We get the default version from here
-NAVIGATION_ROOT_PATH = '../navigation'
-ANDROID_DOCS_ROOT_PATH = '../../android-docs'
-GRADLE_PROPERTIES_PATH = '%s/gradle.properties' % NAVIGATION_ROOT_PATH
+GRADLE_PROPERTIES_PATH = '../gradle.properties'
 GRADLE_TOKEN = 'VERSION_NAME='
 
-# Bitrise
+# Circle CI
 # Triggers a new build, returns a summary of the build
 URL_CIRCLECI = 'https://circleci.com/api/v1.1/project/github/mapbox/mapbox-gl-native/tree/'  # + :branch
 
@@ -71,23 +67,17 @@ URL_CIRCLECI = 'https://circleci.com/api/v1.1/project/github/mapbox/mapbox-gl-na
 @click.command()
 @click.option('--stage', default=ALLOWED_STAGES[0], type=click.Choice(ALLOWED_STAGES), prompt='Set stage', help='The release stage.')
 @click.option('--version', default=CURRENT_VERSION_TAG, prompt='Set version', help='The version you want to publish. E.g: 2.0.0-SNAPSHOT, 2.0.0-beta.1, or 2.0.0. If you set the version to "%s", the script will default to the current SNAPSHOT version.' % CURRENT_VERSION_TAG)
-@click.option('--javadoc/--no-javadoc', default=False, prompt='Produce Javadoc', help='Set whether or not Javadoc should be generated for this release and pushed to Android documentation (as a pull request).')
-def release(stage, version, javadoc):
+def release(stage, version):
 	# Validate params
 	final_stage = validate_stage(stage=stage)
 	final_branch = validate_branch(stage=final_stage)
 	final_version = validate_version(stage=final_stage, branch=final_branch, version=version)
-
-	if javadoc:
-		generate_javadoc(version=final_version);
-		exit();
 
 	# Get user confirmation
 	click.echo('\n===== Build information =====')
 	click.echo('- Stage: %s' % final_stage)
 	click.echo('- Branch: %s' % final_branch)
 	click.echo('- Version: %s' % final_version)
-	click.echo('- Generate Javadoc: %s' % javadoc)
 	click.confirm('\nDoes it look right?', abort=True)
 
 	# Proceed
@@ -97,24 +87,6 @@ def release(stage, version, javadoc):
 		publish_beta(branch=final_branch, version=final_version)
 	elif (final_stage == 'final'):
 		publish_final(branch=final_branch, version=final_version)
-
-# Generate Javadoc
-def generate_javadoc(version):
-	click.echo('Version being used for Javadoc: %s' % version)
-	dirty_gradle = update_current_version(file_path=GRADLE_PROPERTIES_PATH, file_var=GRADLE_TOKEN, version=version)
-	subprocess.Popen(['./gradlew', 'javadocrelease'], cwd=NAVIGATION_ROOT_PATH).wait()
-	subprocess.Popen(['mv', 'release', version], cwd='../navigation/libandroid-navigation/build/docs/javadoc/').wait()
-	subprocess.Popen(['git', 'checkout', 'mb-pages'], cwd=ANDROID_DOCS_ROOT_PATH).wait()
-	BRANCH_NAME = version + '-javadoc'
-	click.echo('Creating android-docs branch: %s' % BRANCH_NAME)
-	subprocess.Popen(['git', 'checkout', '-b', BRANCH_NAME], cwd='../../android-docs').wait()
-	subprocess.Popen(['mv', version, '../../../../../../android-docs/api/navigation-sdk'], cwd='../navigation/libandroid-navigation/build/docs/javadoc/').wait()
-	subprocess.Popen(['git', 'add', 'api/navigation-sdk'], cwd=ANDROID_DOCS_ROOT_PATH).wait()
-	COMMIT_MESSAGE = version + "-javadoc-added"
-	click.echo('Committing with message: %s' % COMMIT_MESSAGE)
-	subprocess.Popen(['git', 'commit', '-m', COMMIT_MESSAGE], cwd=ANDROID_DOCS_ROOT_PATH).wait()
-	subprocess.Popen(['git', 'push', '-u', 'origin', BRANCH_NAME], cwd=ANDROID_DOCS_ROOT_PATH).wait()
-	click.echo('Commit pushed, open a PR now')
 
 def validate_stage(stage):
 	if stage not in ALLOWED_STAGES:
@@ -171,7 +143,7 @@ def publish_final(branch, version):
 	if dirty_gradle:
 		git_add(path=GRADLE_PROPERTIES_PATH)
 		git_commit_and_push(branch=branch, version=version)
-	do_bitrise_request(build_params={'branch': branch, 'workflow_id': 'scheduled'})
+	do_circleci_request(branch=branch)
 
 #
 # Utils
