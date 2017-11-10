@@ -1,0 +1,177 @@
+[
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.51427783320443,
+      "longitude": -0.15708893537521362
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.51327630745771,
+      "longitude": -0.1595136523246765
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.504335045329995,
+      "longitude": -0.15107005834579468
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50996443886577,
+      "longitude": -0.13477295637130737
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50816818362834,
+      "longitude": -0.12895792722702026
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50570406031107,
+      "longitude": -0.1264473795890808
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50967730988437,
+      "longitude": -0.12220948934555054
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.5086690054056,
+      "longitude": -0.12213438749313354
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.511613726102865,
+      "longitude": -0.11866897344589232
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.51417768162066,
+      "longitude": -0.1090988516807556
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.513696950953346,
+      "longitude": -0.10031193494796753
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.509530405984826,
+      "longitude": -0.07818907499313354
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50665232950236,
+      "longitude": -0.07461637258529663
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50041476029036,
+      "longitude": -0.08377879858016968
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.49558573446086,
+      "longitude": -0.10065525770187377
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50077541388511,
+      "longitude": -0.11943072080612181
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50084220127464,
+      "longitude": -0.12611478567123413
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50134310357631,
+      "longitude": -0.1298162341117859
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50568402624205,
+      "longitude": -0.13131827116012573
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50221799972367,
+      "longitude": -0.1414462924003601
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.50259199600548,
+      "longitude": -0.15220731496810913
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "l atitude": 51.5044953223804,
+      "longitude": -0.15214294195175168
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.51255519528545,
+      "longitude": -0.15928834676742554
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.51350332189021,
+      "longitude": -0.1582905650138855
+    }
+  },
+  {
+    "type": "GeoPoint",
+    "value": {
+      "latitude": 51.51427783320443,
+      "longitude": -0.15708893537521362
+    }
+  }
+]
