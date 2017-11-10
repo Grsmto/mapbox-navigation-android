@@ -149,7 +149,7 @@
   {
     "type": "GeoPoint",
     "value": {
-      "l atitude": 51.5044953223804,
+      "latitude": 51.5044953223804,
       "longitude": -0.15214294195175168
     }
   },
