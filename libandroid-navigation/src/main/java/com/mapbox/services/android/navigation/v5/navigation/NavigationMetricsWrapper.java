@@ -112,39 +112,39 @@ final class NavigationMetricsWrapper {
   static void rerouteEvent(SessionState sessionState, MetricsRouteProgress routeProgress, Location location,
                            String locationEngineName) {
     updateRouteProgressSessionData(routeProgress, sessionState);
-
-    Hashtable<String, Object> rerouteEvent = MapboxNavigationEvent.buildRerouteEvent(
-      sdkIdentifier, BuildConfig.MAPBOX_NAVIGATION_VERSION_NAME, sessionState.sessionIdentifier(),
-      location.getLatitude(), location.getLongitude(),
-      sessionState.currentGeometry(), routeProgress.getDirectionsRouteProfile(),
-      routeProgress.getDirectionsRouteDistance(),
-      routeProgress.getDirectionsRouteDuration(),
-      sessionState.rerouteCount(), sessionState.startTimestamp(), beforeLocations, afterLocations,
-      (int) (sessionState.previousRouteDistancesCompleted()
-        + sessionState.routeProgressBeforeReroute().getDistanceTraveled()),
-      (int) sessionState.routeProgressBeforeReroute().getDistanceRemaining(),
-      (int) sessionState.routeProgressBeforeReroute().getDurationRemaining(),
-      (int) routeProgress.getDistanceRemaining(),
-      (int) routeProgress.getDurationRemaining(),
-      sessionState.secondsSinceLastReroute(), TelemetryUtils.buildUUID(),
-      routeProgress.getDirectionsRouteGeometry(), sessionState.mockLocation(),
-      sessionState.originalRequestIdentifier(), sessionState.requestIdentifier(), sessionState.originalGeometry(),
-      sessionState.originalDistance(), sessionState.originalDuration(), null,
-      upcomingInstruction, upcomingType, upcomingModifier, upcomingName, previousInstruction,
-      previousType, previousModifier,
-      previousName, routeProgress.getCurrentStepDistance(),
-      routeProgress.getCurrentStepDuration(),
-      (int) routeProgress.getCurrentStepProgressDistanceRemaining(),
-      (int) routeProgress.getCurrentStepProgressDurationRemaining(),
-      sessionState.currentStepCount(), sessionState.originalStepCount());
-    rerouteEvent.put(MapboxNavigationEvent.KEY_CREATED, TelemetryUtils.generateCreateDate(location));
-
-    int absoluteDistance = DistanceUtils.calculateAbsoluteDistance(location, routeProgress);
-
-    MapboxTelemetry.getInstance().addAbsoluteDistanceToDestination(absoluteDistance, rerouteEvent);
-    MapboxTelemetry.getInstance().addLocationEngineName(locationEngineName, rerouteEvent);
-    MapboxTelemetry.getInstance().pushEvent(rerouteEvent);
-    MapboxTelemetry.getInstance().flushEventsQueueImmediately(false);
+//
+//    Hashtable<String, Object> rerouteEvent = MapboxNavigationEvent.buildRerouteEvent(
+//      sdkIdentifier, BuildConfig.MAPBOX_NAVIGATION_VERSION_NAME, sessionState.sessionIdentifier(),
+//      location.getLatitude(), location.getLongitude(),
+//      sessionState.currentGeometry(), routeProgress.getDirectionsRouteProfile(),
+//      routeProgress.getDirectionsRouteDistance(),
+//      routeProgress.getDirectionsRouteDuration(),
+//      sessionState.rerouteCount(), sessionState.startTimestamp(), beforeLocations, afterLocations,
+//      (int) (sessionState.previousRouteDistancesCompleted()
+//        + sessionState.routeProgressBeforeReroute().getDistanceTraveled()),
+//      (int) sessionState.routeProgressBeforeReroute().getDistanceRemaining(),
+//      (int) sessionState.routeProgressBeforeReroute().getDurationRemaining(),
+//      (int) routeProgress.getDistanceRemaining(),
+//      (int) routeProgress.getDurationRemaining(),
+//      sessionState.secondsSinceLastReroute(), TelemetryUtils.buildUUID(),
+//      routeProgress.getDirectionsRouteGeometry(), sessionState.mockLocation(),
+//      sessionState.originalRequestIdentifier(), sessionState.requestIdentifier(), sessionState.originalGeometry(),
+//      sessionState.originalDistance(), sessionState.originalDuration(), null,
+//      upcomingInstruction, upcomingType, upcomingModifier, upcomingName, previousInstruction,
+//      previousType, previousModifier,
+//      previousName, routeProgress.getCurrentStepDistance(),
+//      routeProgress.getCurrentStepDuration(),
+//      (int) routeProgress.getCurrentStepProgressDistanceRemaining(),
+//      (int) routeProgress.getCurrentStepProgressDurationRemaining(),
+//      sessionState.currentStepCount(), sessionState.originalStepCount());
+//    rerouteEvent.put(MapboxNavigationEvent.KEY_CREATED, TelemetryUtils.generateCreateDate(location));
+//
+//    int absoluteDistance = DistanceUtils.calculateAbsoluteDistance(location, routeProgress);
+//
+//    MapboxTelemetry.getInstance().addAbsoluteDistanceToDestination(absoluteDistance, rerouteEvent);
+//    MapboxTelemetry.getInstance().addLocationEngineName(locationEngineName, rerouteEvent);
+//    MapboxTelemetry.getInstance().pushEvent(rerouteEvent);
+//    MapboxTelemetry.getInstance().flushEventsQueueImmediately(false);
   }
 
   static void feedbackEvent(SessionState sessionState, MetricsRouteProgress routeProgress, Location location,
