@@ -420,8 +420,10 @@ public class NavigationViewActivity extends AppCompatActivity implements OnMapRe
   public void onRunning(boolean running) {
     if (running) {
       Timber.d("onRunning: Started");
+    }
+  }
 
-  @SuppressWarnings( {"MissingPermission"})
+  @SuppressWarnings({"MissingPermission"})
   private void initLocationEngine() {
     locationEngine = new LostLocationEngine(this);
     locationEngine.setPriority(HIGH_ACCURACY);
