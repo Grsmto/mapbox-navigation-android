@@ -27,8 +27,11 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.services.android.navigation.testapp.R;
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
-import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+import com.mapbox.services.android.navigation.ui.v5.camera.NavigationCamera;
+import com.mapbox.services.android.navigation.v5.location.MockLocationEngine;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOptions;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationEventListener;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.mapbox.services.android.navigation.v5.offroute.OffRouteListener;
 import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener;
@@ -60,8 +63,11 @@ import timber.log.Timber;
 
 import static com.mapbox.services.commons.models.Position.fromLngLat;
 
-public class NavigationViewActivity extends AppCompatActivity implements OnMapReadyCallback,
-  MapboxMap.OnMapLongClickListener, LocationEngineListener, Callback<DirectionsResponse> {
+public class NavigationViewActivity extends FragmentActivity implements
+  OnMapReadyCallback,
+  NavigationEventListener,
+  OffRouteListener,
+  ProgressChangeListener {
 
   private MapboxMap map;
   private MapboxNavigation navigation;
@@ -103,6 +109,7 @@ public class NavigationViewActivity extends AppCompatActivity implements OnMapRe
     setContentView(R.layout.activity_reroute);
 
     ButterKnife.bind(this);
+
     mapView.onCreate(savedInstanceState);
     mapView.getMapAsync(this);
 
@@ -420,22 +427,10 @@ public class NavigationViewActivity extends AppCompatActivity implements OnMapRe
   public void onRunning(boolean running) {
     if (running) {
       Timber.d("onRunning: Started");
-    }
-  }
 
-  @SuppressWarnings({"MissingPermission"})
-  private void initLocationEngine() {
-    locationEngine = new LostLocationEngine(this);
-    locationEngine.setPriority(HIGH_ACCURACY);
-    locationEngine.setInterval(0);
-    locationEngine.setFastestInterval(1000);
-    locationEngine.addLocationEngineListener(this);
-    locationEngine.activate();
-
-    if (locationEngine.getLastLocation() != null) {
-      Location lastLocation = locationEngine.getLastLocation();
-      onLocationChanged(lastLocation);
-      currentLocation = Point.fromLngLat(lastLocation.getLongitude(), lastLocation.getLatitude());
+      camera.start(currentRoute);
+    } else {
+      Timber.d("onRunning: Stopped");
     }
   }
 
